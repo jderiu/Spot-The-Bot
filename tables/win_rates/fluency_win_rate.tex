@@ -1,0 +1,44 @@
+\begin{table}[h!]
+\centering
+\small
+\scalebox{0.65}{
+\begin{tabular}{l|cccccc|cc} 
+\multicolumn{9}{c}{Dailydialog} \\
+\toprule
+\textsc{} & \textsc{GPT} &  \textsc{BR} &  \textsc{S2} & \textsc{DR} & & & \textsc{Win Rate}& \textsc{Range}\\
+\hline 
+\textsc{GPT} & -            & 0.54          & \textbf{0.85}    & \textbf{0.85} & & & 0.74 & (1,1) \\
+\textsc{BR}  & 0.46         & -             & \textbf{0.79}    & \textbf{0.78} & & & 0.67 & (1,2)  \\
+\textsc{S2} & \textbf{0.15} & \textbf{0.21} & -                 & \textbf{0.64} & & & 0.33 & (3,3) \\
+\textsc{DR} & \textbf{0.15} & \textbf{0.22} & \textbf{0.36}     & -             & & & 0.24 & (4,4) \\
+\bottomrule
+
+\multicolumn{9}{c}{Empathetic Dialogues} \\
+\toprule
+\textsc{} & \textsc{BL} & \textsc{BR} &  \textsc{GPT} &  \textsc{S2} & \textsc{DR} & & \textsc{Win Rate} & \textsc{Range}\\
+\hline 
+\textsc{BL}   & -              & \textbf{0.72} & \textbf{0.86} & \textbf{0.85} & \textbf{0.94} && 0.84  & (1,1)  \\
+\textsc{BR}   & \textbf{0.28}  & -             & 0.52          & \textbf{0.73} & \textbf{0.89} && 0.60  & (2,2)  \\
+\textsc{GPT}  & \textbf{0.14}  & 0.48          & -             & \textbf{0.68} & \textbf{75}   && 0.51  & (2,3) \\
+\textsc{S2}   & \textbf{0.15}  & \textbf{0.27} & \textbf{0.32} & -             & 0.59          && 0.33  & (4,4) \\
+\textsc{DR}   & \textbf{0.06}  & \textbf{0.11} & \textbf{0.25} & 0.41          & -             && 0.19  & (5,5)\\
+\bottomrule
+
+
+
+\multicolumn{9}{c}{PersonaChat} \\
+\toprule
+\textsc{} & \textsc{BL}& \textsc{KV} &  \textsc{LC} &  \textsc{BR} & \textsc{HF}  & \textsc{DR} &\textsc{Win Rate} & \textsc{Range}\\
+\hline 
+\textsc{BL}& -             & \textbf{0.67} & \textbf{0.62} & \textbf{0.79} & \textbf{0.63} & \textbf{94}   &  0.73    & (1-1) \\
+\textsc{KV}& \textbf{0.33} & -             & 0.54          & \textbf{0.66} & \textbf{0.70} & \textbf{0.83} & 0.61     & (2-3)\\
+\textsc{LC}& \textbf{0.38} & 0.46          & -             & 0.52          & \textbf{0.60} & \textbf{0.83} & 0.56     & (2-4)\\
+\textsc{BR}& \textbf{0.21} & \textbf{0.34} & 0.48          & -             & 0.61          & \textbf{0.78} & 0.48     & (3-5)\\
+\textsc{HF}& \textbf{0.37} & \textbf{0.30} & \textbf{0.40} & 0.39          & -             & \textbf{0.82} & 0.45     & (3-5) \\
+\textsc{DR}& \textbf{0.06} & \textbf{0.17} & \textbf{0.17} & \textbf{0.22} & \textbf{0.18} & -             & 0.16     & (6-6) \\
+\bottomrule
+\end{tabular}
+}
+\caption{Win rates for each pair of systems for each of the three domains. The bold entries denote significance ($p < 0.05$) computed with Chi-square test.}
+\label{tab:fl-win-rates}
+\end{table}
