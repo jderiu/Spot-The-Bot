@@ -1,11 +1,10 @@
 \begin{table}[h!]
 \centering
-\small
 \scalebox{0.75}{
 \begin{tabular}{l|cccccc|cc} 
 \multicolumn{9}{c}{Dailydialog} \\
 \toprule
-\textsc{} & \textsc{GPT} &  \textsc{BR} &  \textsc{S2} & \textsc{DR} & & & \textsc{Win Rate}& \textsc{Range}\\
+\textsc{} & \textsc{GPT} &  \textsc{BR} &  \textsc{S2} & \textsc{DR} & & & \textsc{WR}& \textsc{Range}\\
 \hline 
 \textsc{GPT} & -             & \textbf{0.67} & \textbf{0.77} & \textbf{0.93} & & & 0.79 & (1,1) \\
 \textsc{BR} & \textbf{0.33} & -          & \textbf{0.79}    & \textbf{0.83} & & & 0.65 & (1,2)  \\
@@ -14,7 +13,7 @@
 \bottomrule
 \multicolumn{9}{c}{Empathetic Dialogues} \\
 \toprule
-\textsc{} & \textsc{BL}& \textsc{BR} &  \textsc{GPT} &  \textsc{S2} & \textsc{DR} & & \textsc{Win Rate} & \textsc{Range}\\
+\textsc{} & \textsc{BL}& \textsc{BR} &  \textsc{GPT} &  \textsc{S2} & \textsc{DR} & & \textsc{WR} & \textsc{Range}\\
 \hline 
 \textsc{BL}& - & \textbf{0.82} & \textbf{0.83} & \textbf{0.9} & \textbf{0.94} && 0.87 & (1,1)  \\
 \textsc{BR}& \textbf{0.18} & - & 0.51 & \textbf{0.77} & \textbf{0.93} && 0.59 & (2,3)  \\
@@ -23,11 +22,9 @@
 \textsc{DR}& \textbf{0.06} & \textbf{0.07} & \textbf{0.27} & \textbf{0.37} & - && 0.19  & (5,5)\\
 \bottomrule
 
-
-
 \multicolumn{9}{c}{PersonaChat} \\
 \toprule
-\textsc{} & \textsc{BL}& \textsc{LC} &  \textsc{KV} &  \textsc{HF} & \textsc{BR}  & \textsc{DR} &\textsc{Win Rate} & \textsc{Range}\\
+\textsc{} & \textsc{BL}& \textsc{LC} &  \textsc{KV} &  \textsc{HF} & \textsc{BR}  & \textsc{DR} &\textsc{WR} & \textsc{Range}\\
 \hline 
 \textsc{BL}& - & 0.56 & \textbf{0.68} & \textbf{0.72} & \textbf{0.84} & \textbf{0.95}&  0.75 & (1-1) \\
 \textsc{LC}& 0.44 & - & 0.54 & \textbf{0.72} & \textbf{0.75} & \textbf{0.89} & 0.69  & (2-3)\\
@@ -38,6 +35,7 @@
 \bottomrule
 \end{tabular}
 }
-\caption{Win rates for each pair of systems for each of the three domains. The bold entries denote significance ($p < 0.05$) computed with Chi-square test. The ranking ranges are computed using bootstrap sampling. The rank ranges are the ranges in which the bot falls in at least 95\% of cases. Two bots are distinct if there is no overlap in the ranges of their respective cluster.}
+\caption{Win rates (WR) for each pair of systems for each of the three domains. The bold entries denote significance ($p < 0.05$) computed with Chi-square test. The ranking ranges are computed using bootstrap sampling. %The rank ranges are the ranges in which the bot falls in at least 95\% of cases. Two bots are distinct if there is no overlap in the ranges of their respective cluster.
+}
 \label{tab:win_rates}
 \end{table}

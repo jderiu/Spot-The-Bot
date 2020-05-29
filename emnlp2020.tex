@@ -42,7 +42,7 @@
 
 \newcommand\BibTeX{B\textsc{ib}\TeX}
 
-\title{Spot The Bot: A Framework for Conversational Dialogue System Evaluation}
+\title{Spot The Bot: A Robust and Efficient Framework for the Evaluation of Conversational Dialogue System}
 
 \author{First Author \\
   Affiliation / Address line 1 \\
@@ -60,130 +60,73 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-%We introduce Spot The Bot, a framework for evaluating conversational dialogue systems (i.e.\ chat bots). Spot The Bot is a tournament between chat bots, whose goal it is to pass as humans. 
-%The tournament is based on conversations between the competing bots, mixed with conversations between humans. The conversations are shown to human annotators who decide which participants are bots. 
-%The bot that most frequently convinces human that it is human is ranked highest.
-
-%We empirically show that Spot The bot is more time- and cost-efficient than related approaches and yields robust results. We apply the approach to three domains and several state-of-the-art chat bots to evaluate them.
+We introduce \emph{Spot The Bot}, a framework for evaluating conversational dialogue systems (chat bots) that aims at addressing several shortcomings in current evaluation approaches. In its core, \emph{Spot The Bot} relies on conversations between the bots that are to be evaluated, alleviating the need to create human-bot conversations which are time- and cost-intensive to create. 
+These conversations are then, mixed with conversations between humans, shown to human annotators who decide which of the participants are bots. In the evaluation of these annotations, bots are ranked regarding their ability to disguise as humans. We empirically show that \emph{Spot The bot} is a robust and time-efficient method for evaluating chat bots by applying it to three domains, evaluating several state-of-the-art chat bots and drawing comparison to related work. The framework is released as a ready-to-use tool.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
-\paragraph{Motivation.}
-Evaluation is a crucial step in the development cycle of dialogue systems, which is very cost-and time-intensive and often not reproducible. This problem is especially pronounced for conversational dialogue systems (i.e. chit-chat bots), which work on open domains and do not have a clearly defined goal, which can be measured. This not only slows down the development of novel approaches but it also makes it hard to reliably recreate the evaluation. 
-There are several open problems: 
-\begin{itemize}
-\item  Human-bot conversations are costly to obtain and they often suffer from low quality. Low quality dialogues are the result of the limited capabilities of the algorithms, which are typically specialized in the training domain, and the fact that humans do not adhere to the distribution in which the model has been trained. Furthermore, the cognitive strain on the annotators is increased when they have to both converse with the bot and then rate the conversation \cite{}.
-\item Human ratings are less costly to obtain but they often suffer from low agreement scores. Furthermore, these ratings are hard to reproduce and not necessarily stable across different executions. 
-\item Current offline evaluations do not take into account the multi-turn character of conversations. Often, the evaluation is performed on a static context (e.g. sampled from a test set) and a generated response utterance of the bot under consideration. 
-\item There is a general lack of automation of the evaluation procedure. Most automated metrics do not correlate to human judgements \cite{foster-2008-automated}, or are unstable.
-\end{itemize}
-\paragraph{Claim.}
-In this work, we present \emph{Spot The Bot}, a cost-and-time efficient evaluation methodology, which can be used to reliably discriminate different dialogue strategies. \emph{Spot The Bot} is based on the observation that conversational dialogue systems are trained on human-human conversations, and thus, the dialogue systems should be evaluated in their ability to mimic human behaviour. This idea is related to the Turing Test, where the goal is that a bot's behaviour is indistinguishable from human behaviour.
-\emph{Spot The Bot} works by letting two bots converse with each other and letting crowdworkers decide for each entity in the conversation if it is a human or a bot. Since we assume that in most cases the bots are identified as such eventually, we add a time component so that the discriminating criterion is not whether a bot is mistaken for a human, but which dialogue system can disguise as a human the longest?
+\noindent{\bf Motivation} Evaluation is a long-standing issue in the development of conversational dialogue systems (i.e.\ chat bots). The underlying difficulty in evaluation lies in the nature of the problem: Chat bots do not solve a clearly-defined task whose success is measurable in relation to an a priori defined ground truth. A common practice thus has become to aggregate subjective human judgements on a bot's success regarding criteria which often do not share a common, standardized definition. Such approaches entail further issues regarding evaluation: Gathering these human judgements is time- and cost-intensive, in addition to often yielding low agreement. The required cost- and time efforts also inhibit the repetition of such evaluations which raises questions on the robustness and thus significance of the results. 
+Furthermore, current evaluations are based on single-turn ratings, which disregards the multi-turn nature of a dialogue. Although more and more multi-turn evaluations are performed, most of them are based on human-bot conversations, which are costly to obtain and suffer from low quality. \\
+\noindent{\bf Contributions.}  In this work, we present the \emph{Spot The Bot} framework, an efficient evaluation methodology, which can be used to reliably discriminate different dialogue strategies. \emph{Spot The Bot} is based on the observation that conversational dialogue systems are trained on conversations between humans, and thus, the dialogue systems should be evaluated regarding their ability to mimic human behavior. \emph{Spot The Bot} works by  generating conversations between bots and letting crowd workers decide for each entity in the conversation if it is a human or a bot. It further allows to pin down features that contribute to a dialogue system's performance, enabling interpretable results (see Figure \ref{fig:motiv} for an overview). \\
+ We show that our framework produces reliable, repeatable results, while being quicker and more cost-effective to run than related approaches, as it does not rely on human-bot conversations and generally requires fewer annotations. Furthermore, we show that disagreement between human annotators can be interpreted as a feature of a system's performance, rather than as a weakness in the evaluation approach. We apply the framework to three well-known domains as well as common baselines to produce a stable ranking among them. We release the framework as a ready-to-use tool for evaluating dialogue systems into which different systems can be plugged and compared\footnote{URL PLACEHOLDER}.
 
-\paragraph{Contributions.}
-This paper makes the following contributions:
-\begin{itemize}
-\item We present an evaluation framework for dialogue systems that produces reliable, repeatable results. The framework is quicker and more cost-effective to run than related approaches, as it does not rely on human-bot conversations and generally requires fewer annotations.
-\item The analysis within the framework allows to pin down features that contribute to a dialogue's system performance, enabling interpretable results. Furthermore, we show that disagreement between human annotators can be interpreted as a feature of a system's performance, rather than as a weakness in the evaluation approach. 
-\item We apply the framework to three well-known domains and five (?)recently released state-of-the-art bots as well as common baselines to produce a stable ranking among them.
-\item We release the framework as a ready-to-use tool for evaluating dialogue systems into which different systems can be plugged and compared.
-\end{itemize}
+\begin{figure*}
+    \centering
+    \includegraphics[scale=0.5]{figures/motivation_example_spotTheBot.pdf}
+    \caption{Description of the main differences between the dialog systems evaluation methodology, in state of the art (scenario 1) and our model Spot The Bot (scenario 2).}
+    \label{fig:motiv}
+\end{figure*}
 
 \section{Related Work}
+\label{sota}
 
-Nowadays there exist many methods to evaluate dialogue systems, both automatic and human-based, but unfortunately there is no single evaluation metric that is widely agreed upon the scientific community. Task oriented dialogues can be evaluated based on whether the task is successfully accomplished, but open domain chit-chat systems, which do not have a precise goal, are more challenging to evaluate.
-
-% an extensive overview of eval methods for dialogue systems can be found in
-% our survey: https://arxiv.org/pdf/1905.04071.pdf
-
-Automatic evaluation metrics on chit-chat systems are problematic and are known to correlate poorly with human ratings~\cite{liu-etal-2016-evaluate,lowe-etal-2017-towards}. A widely used alternative is to perform a human based evaluation, where annotators are asked to rate the quality of dialogues. Human based evaluation is usually classified into single-turn or multi-turn evaluation. Single-turn evaluation, where each turn of the dialogue is evaluated in isolation, has the benefit of being simple, and there are automatic single-turn metrics that correlate with humans scores~\cite{mehri2020usr}. However, single-turn evaluation fails to capture the quality of the conversation as a whole. For instance, a system that tend to produce repeated answers cat obtain a high single-turn score, albeit a low multi-turn one. In multi-turn evaluation humans evaluate complete dialogues, and is often measured using aggregate scores like Likert scores. However, Likert scores are known to suffer from high annotation variance, and are prone to order effects~\cite{amidei-etal-2019-use}. In any case, human based evaluation is expensive and time consuming, and results are difficult to compare across different studies \cite{van-der-lee-etal-2019-best,amidei2019agreement}. 
-
-\citet{venkatesh2018evaluating} performed a study about how to evaluate dialogue systems at the Alexa Prize and compare results with those from humans' ratings. They proposed to measure domain coverage, coherence, topical diversity and conversational depth using different metrics. Some of these metrics are evaluated automatically, while others require humans. The authors also propose a unified measure that aggregate the metrics to obtain a global score. Compared with human ratings, this measure shows a high correlation of $0.66-0.7$. However, it is unclear how to apply the proposed method for new systems over the same dataset. Besides, the unified measure requires collecting several human annotations (for different features) and evaluating several systems.
-
-%A new release of this system, namely ConvLab-2, is proposed by \cite{zhu2020convlab}. ConvLab-2 performs a qualitative and quantitative analysis, extending its predecessor by integrating many recently proposed state-of-the-art dialogue models. In both ConvLab and ConvLab-2, each speaker in a conversation is considered as an agent. This aspect enables using multiple models for one component and supports multi-party conversations. The main limitation of this approach is that the upcoming interactions may be confused, and make it difficult to distinguish the bot from the human agent. Besides, this approach can lead to a disagreement between the human's decision and the simulator's decision. 
-
-Evaluation is usually performed on dialogues involving different entities. Reference datasets often consists of dialogues between two humans, but building such datasets is very costly and time consuming. Besides, humans are often asked to also rate the dialogues, which increases the cognitive strain posed on them~\cite{SCHMITT201512}. Collecting human bot conversations is less time costly, but the quality is often low. For instance, in the ConvAI2 challenge half of the collected human bot conversations were discarded due to their low quality~\cite{convai12}. An alternative is to evaluate bots that talk to themselves~\cite{ghandeharioun2019approximating,li2019acuteeval,deriu-cieliebak-2019-towards}. In ACUTE-EVAL~\cite{li2019acuteeval} the authors evaluate bots that are self-chatting, and show that the results are comparable to human-bot chats. ACUTE-EVAL is similar to our method and also compares pairs of systems. However, ACUTE-EVAL requires humans to read two complete dialogues, while our method proposes to read a single dialogue until the user can make a decision. Besides, it does not provide a single measure per system.
-
-\emph{Spot The Bot} is reminiscent of the Turing test, as the dialogue systems are evaluated based on their ability to mimic human behaviour. The Turing test has been criticized as a way to identify intelligence in NLP systems. For instance, \citet{bender-2020-acl} argue that a system may fool a user into believing it is human, and yet this does not prove that the system understands the meaning of the conversation they are having. However, in this paper we claim that \emph{failing} the test is a valid indicator that helps discriminate among bots that are competing with each other. Besides, we presume that eventually all the bots will fail the test, and hence we also collect a time component to record how much time it took to the bot to cheat the human.
-
-% \section{Related Work}
-% *TODO show that related work often suffers from reliability (low agreements between annotators), poor quality of human-bot convos (cf. convai2 threw away half their conversations), huge amount of conversations needed, cost and time (creating human-bot convos, many annotations on them).
-% *TODO discuss Turing test and Alexa challenge (and ConvAI2 challenge).
-% *TODO discuss ACUTEval from Facebok
-% *TODO: include BERTScore?
+Nowadays there exist many methods to evaluate dialogue systems, both automatic and human-based, but unfortunately there is no single evaluation metric that is widely agreed upon in the scientific community \cite{deriu2019survey}. Task oriented dialogues can be evaluated based on whether the task is successfully accomplished, but open domain chit-chat systems, which do not have a precise goal, are more challenging to evaluate. Automatic evaluation metrics on chit-chat systems are problematic and are known to correlate poorly with human ratings~\cite{liu-etal-2016-evaluate,lowe-etal-2017-towards}. \\
+\noindent{\bf Likert scale.} Most human evaluation are performed based on a Likert scale. However, Likert scores are known to suffer from high annotation variance,  are prone to order effects, are less reliable than participant ratings and have received much criticism~\cite{amidei-etal-2019-use}. In any case, human based evaluation is expensive and time consuming, and results are difficult to compare across different studies \cite{van-der-lee-etal-2019-best,amidei2019agreement}. \\
+\noindent{\bf Single-turn evaluations.} Evaluations based on a static context and a single response from the dialogue systems are widely adopted, as they are time and cost efficient. Automated metrics that correlate with human scores exits in this setting~\cite{lowe-etal-2017-towards,mehri2020usr}. However, single-turn evaluation fails to capture the quality of the conversation as a whole.  For instance, a system that tends to produce repeated answers cat obtain a high single-turn score, albeit a low multi-turn one. \\
+\noindent{\bf Human-Bot conversations.}  In order to perform multi-turn evaluations, the standard method is to let humans converse with the dialogue system and rate it afterwards. For instance, the ConvAI2 challenge~\cite{convai12} as well as the Alexa Prize~\cite{venkatesh2018evaluating} applied this procedure. There are several issues with this approach. First, it puts a high cognitive strain on the humans, as they have to perform several tasks at once~\cite{SCHMITT201512}. Second, it is hard to get high quality conversations. In fact, in the ConvAI2 challenge half of the collected human-bot conversations were discarded due to their low quality~\cite{convai12}. \\
+\noindent{\bf Self-talk.} Recently, the idea of using self-talk dialogues, that is, dialogues where the bot talks to itself gained traction as a more cost efficient basis for evaluation~\cite{ghandeharioun2019approximating,li2019acuteeval,deriu-cieliebak-2019-towards}. For instance, in ACUTEval~\cite{li2019acuteeval} the authors evaluate bots that are self-chatting, and show that the results are comparable to human-bot chats. However, the humans need to read two dialogues by two different bots and decide which bot performed better with respect to various features. This increases the cognitive strain on annotators, as well as not being the optimal basis for direct comparisons between two bots. \\
+\nodindent{\bf Turing Test.} \emph{Spot The Bot} is reminiscent of the Turing test, as the dialogue systems are evaluated based on their ability to mimic human behaviour. The Turing test has been criticized as a way to identify intelligence in NLP systems. For instance, \citet{bender-2020-acl} argue that a system may fool a user into believing it is human, and yet this does not prove that the system understands the meaning of the conversation they are having. However, in this paper we claim that \emph{failing} the test is a valid indicator that helps discriminate among bots that are competing with each other. Besides, we presume that eventually all the bots will fail the test, and hence we also collect a time component to record how much time it took for the bot to cheat the human.
 
 
-% Dialogue systems are usually evaluated in terms of quality and diversity. There are two main approaches: automatic and human-based evaluations. Automatic methods are based on evaluation metrics from automatic summarization and machine translation like BLEU \cite{papineni-etal-2002-bleu} and ROUGE \cite{lin-2004-rouge}, focus on measuring the overlap with a reference dialogue. Then, correct dialogues with a low overlapping receive a low score, what is know as the one-to-many problem  \cite{zhao-etal-2017-learning}. Besides, models producing wrong responses with probable words could be over-rewarded  \cite{li-etal-2016-deep}. Thus, while automatic evaluation is a long-term objective that would benefit the development of new systems, they usually disagree with human evaluations \cite{liu-etal-2016-evaluate,lowe-etal-2017-towards}.
 
-% An alternative to mitigate the one-to-many problem is to produce datasets with multiple references. Additional references can be created automatically \cite{galley-etal-2015-deltableu,sordoni-etal-2015-neural}, which does not reflect diversity, or using more humans \cite{Sugiyama2019}, what increase the annotation cost. Then, given a metric, the multiple-reference approach selects the highest score resulting from comparing the output with all the references. This simple approach has shown a higher correlation with human judgments than evaluations based on a single reference \cite{gupta-etal-2019-investigating}. Nevertheless, this approach requires a higher effort in creating datasets and does not cover all the possible correct sentences.
-
-% Given the open nature of dialogues, it might be unfair to evaluate systems against a reference dialogue. This is why \citet{mehri2020usr} propose the UnSupervised and Reference free (USR) evaluation metric. USR measures properties of dialogues like being natural, keeping context or showing knowledge, without comparing them with a reference. For this purpose, USR uses a RoBERTa model \cite{DBLP:journals/corr/abs-1907-11692} fine-tuned for each property. Then, all the properties are combined into a single score using a regression model trained with human annotations. The final score shows a high correlation with human scores. Besides, this measure can include more properties and other ways of combining them.
-
-% On the other hand, human evaluations are expensive and time-consuming, and results are difficult to compare across different studies [REF]. There are two kinds of performing human evaluations: (1) single-turn, where the human  scores just one turn of the dialogue and thus the method is faster but cannot capture the global dimension of the dialogue and; (2) multi-turn, where the human evaluates the whole dialogue. [*TODO include comments about the low agreement and high bias]]. * TODO: use of Likert scores
-
-% There is another trend that tries to combine human and automatic evaluations given that human evaluations do not usually capture  diversity, but encourages quality, and automatic evaluations fail to measure quality but penalize the lack of diversity. Human Unified with Statistical Evaluation (HUSE) combines both approaches by measuring error rates of the model and combining them into a single score able to evaluate both quality and diversity \cite{hashimoto-etal-2019-unifying}.
-
-% In order to overcome the annotator bias of common human evaluations, \citet{li2019acuteeval} have proposed an evaluation named ACUTE-EVAL. ACUTE-EVAL is based on comparing systems by pairs and avoiding humans to give scores. More in detail, several humans have to select between two systems with respect to two different dialogues produced by those systems conversing with humans. The selection is based on a single quality like engaging, interesting, knowledgeable or humanness. Then, given a set of systems to be evaluated, the method consists of running several trials comparing each pair of systems and return for each pair the percentage of winning matches according to each quality.  From this result, a ranking of systems can be given. ACUTE-EVAL is similar to our method since ACUTE-EVAL compares pairs of systems. However, ACUTE-EVAL requires humans to read two complete dialogues, while our method proposes to read a single dialogue until the user can make a decision. Besides, ACUTE-EVAL does not provide a single measure per system.
-
-% \cite{venkatesh2018evaluating} performed a study about how to evaluate dialogue systems at the Alexa Prize \todo{Check if previous information about the Alexa prize has been given} and compare results with those from humans' ratings. They have available a large dataset containing millions of dialogues between humans and bots participating at the Alexa Prize, with each dialogue rated by the human who took part in the dialogue (in human evaluations, it is common that the annotator does not take part in the dialogue). The proposed to measure domain coverage, coherence, topical diversity and conversational depth using different metrics since the authors think these features are important as part of good dialogue. Some of these metrics are evaluated automatically, while others require humans. The authors also propose a unified measure combining all the others. This measure is based on giving a point to the best systems for each feature. Then, the final score for each system is the sum of all the points given to that system. Compared with human rating, this measure shows a correlation of 0,66-0,7. It is unclear how to apply the proposed method for new systems over the same dataset. Besides, the unified measure requires collecting several human annotations (for different features) and evaluating several systems.
-
-% Current human evaluations are based on static data, without paying attention to interactivity, which is essential for evaluating diversity in dialogues. Since, it is difficult and expensive to evaluate systems in an interactive framework, \cite{ghandeharioun2019approximating} propose a method where a system converse with itself for a fixed number of turns. Then, the dialogue is evaluated taking into account metrics related to sentiment, semantics and user engagement. Finally, a function trained with human dialogues predicts a score taking into account those metrics. This final score shows a high correlation (0.7 Pearson correlation) with human scores.
-
-% % thiziri added this:
-% Another approach is to combine several models in a same dialog system. For instance, ConvLab \cite{lee-etal-2019-convlab} is an open-source toolkit that supports an end-to-end evaluation  of several state-of-the-art dialogue systems to compare a set of different approaches. ConvLab is based on Agents-Environments-Bodies (AEB) design architecture, where an agent refers to every instance of dialogue that can be either a human being or a simulated user, the environment is every evaluation component, and the body is the physical instance of the agent. A new release of this system, namely ConvLab-2, is proposed by \cite{zhu2020convlab}. ConvLab-2 performs a qualitative and quantitative analysis, extending its predecessor by integrating many recently proposed state-of-the-art dialogue models. In both ConvLab and ConvLab-2, each speaker in a conversation is considered as an agent. This aspect enables using multiple models for one component and supports multi-party conversations. The main limitation of this approach is that the upcoming interactions may be confused, and make it difficult to distinguish the bot from the human agent. Besides, this approach can lead to a disagreement between the human's decision and the simulator's decision. In \cite{sinha2020learning}, the authors propose the MAUDE model, an unsupervised unreferenced evaluation metric to evaluate the responses of a dialogue system, where no comparison between the responses is performed. This metric uses a set of pre-trained language models to compute semantic representations of utterances, including the temporal transitions between them. In MAUDE, an agent is provided with a set of utterances, called context, and is expected to provide a response. Every sequence is represented by a semantic vector where the component words are encoded using a contextual embedding model (BERT). This model focuses on the evaluation of generative neural dialogue models. However, it does not provide an explicit evaluation of the agent and its interaction with other agents (human beings or bots), and the comparison between different agents is not straightforward. Besides, it involves training text encoders using a noise contrastive estimation (NCE) to distinguish between valid dialogue responses and a set of negative examples, which requires a large amount of conversations to be trained.
 
 \section{Spot The Bot}
 
 In this section, we first provide an overview of the \emph{Spot The Bot} framework and then describe the individual steps of the evaluation process.
 
+%\subsection{Motivation}
+%In most of the evaluation methods described in section \ref{sota}, the evaluation of a dialogue system is based on human interactions and time consuming. Most of those methods can be described as in the scenario 1 of figure \ref{fig:motiv}, where given a specific task, a human interacts with the system and then decide if the system helped solving the task. This method focuses at the interaction and answers quality of one system at a time. Rather than evaluating the bot answers by a human, we consider an interaction between at least two different systems, then assess the quality of each system's answers. This process is highlighted in the scenario 2 of figure \ref{fig:motiv}, where, independently from a task, a human is a judge that decide if a given system is good or not, based on its answer. Such that, we consider a system as good, if the judge consider it as a human.
+
 \subsection{Overview}
+\label{sec:setting}
 % figure
 %----------------------------------------------------------------------------
 \begin{figure*}
     \centering
-    \includegraphics[width=0.7\linewidth]{figures/Spot the bot - annotation example - sketch3.pdf}
-    \caption{Overview of the Spot The Bot process. 1: A bot-bot conversation is segmented into sub-segments of different lengths (2, 3, and 5 exchanges). 2: These are show to distinct sets of annotators who judge whether each entity is a bot. 4: The winner is determined for each annotated segment. This process is repeated for all conversations between the competing bots. 5: Finally, wins are aggregated from all annotated segments for each bot to create a ranking. *TODO make this figure prettier; find better visual presentation.}
+    %\includegraphics[scale=0.5]{figures/Copy of Spot the bot - annotation example - sketch2.pdf}
+     \includegraphics[scale=0.5]{figures/Spot the bot - annotation example - sketch2.pdf}
+    \caption{Overview of the Spot The Bot process for one conversation. 1: A bot-bot conversation is segmented into different lengths (2, 3, and 5 exchanges). 2: These are show to distinct sets of annotators who judge whether each entity is a bot. 4: The winner is determined for each annotated segment and survival statistics are updated. This process is repeated for all conversations between the competing bots.}
     \label{fig:example}
 \end{figure*}
 %----------------------------------------------------------------------------
-\emph{Spot The Bot} employs a tournament among conversational dialogue systems (bots) to determine which performs the best at mimicking the conversational behaviour of humans. To measure the success of each bot, human crowdworkers are shown conversations between the competing bots, mixed with conversations between humans. The crowdworkers' task is then to determine for each participant in a conversation whether it is a human or a bot (or whether they are unsure). The bot that is most frequently annotated as being human, wins the tournament. Figure \ref{fig:example} provides an overview of the process for one conversation.
+\emph{Spot The Bot} employs a tournament among conversational dialogue systems (bots) to determine which performs the best at mimicking the conversational behavior of humans. To measure the success of each bot, human crowd workers are shown conversations between the competing bots, mixed with conversations between humans. The crowd workers' task is then to determine for each participant in a conversation whether it is a human or a bot (or whether they are unsure). The bot that is most frequently annotated as being human, wins the tournament. Figure \ref{fig:example} provides an overview of the process for one conversation. \\
+More formally, assume that there is a pool of $B$ bots $\{B_1, ..., B_B\}$, which is to be ranked, e.g.\ when a novel dialogue strategy is to be compared against existing strategies. For each pair of bots, a set of conversations is sampled by letting the bots talk to each other, where $S_{ij}$ denotes the set of conversations between $B_i$ and $B_j$. Each conversation is defined as a sequence of exchanges $e_0, ..., e_N$, where each exchange consists of two turns: $e_i = \{t_0^{e_i}, t_1^{e_i}\}$, one for each entity. % These conversations are sampled by priming the bots on contexts from the test set. Note that these contexts are not shown to the annotators, as they are not part of the bots’ output.\\
+\noindent{\bf Segmentation.} The more exchanges there are in a conversation, the more likely it is that a bot gets recognized as such. Thus, we show different segments to the crowd workers. That is, we show the conversation at different stages $S_{ij}^k = e_0, ..., e_k$, where we chose different sets of values for $k$ depending on the domain \footnote{We experimented with letting crowdworkers decide themselves when to decide the exchange at which they were sure that an entity in the conversation is a bot or a human. However, this approach required too much fine-tuning to elicit the desired behaviour, cf.\ Appendix \ref{sec:appendix_gamification}.}.  Each segment of the same conversation is rated by a different annotator to avoid that one annotator sees the same conversation multiple  times, which would bias the rating. We choose multiple different segment lengths since we cannot know a priori which single length leads to a distinguishable difference between bots.\\
+\noindent{\bf Human Conversations.} In order to establish an upper bound, we also add conversations among humans, which are sampled form the training material to be rated. These human conversations also serve as distractions to avoid that annotators start rating all the bots as humans due to potentially low quality of the bots.\footnote{We investigated whether the annotators realize that conversations are either between bots or humans by looking at ratios of conversations where both entities are labeled identically, but found no evidence that this happens more often than by chance.} \\
+\noindent{\bf Annotation.} The annotation procedure works in two steps: First, the annotators have to decide for each entity in the conversation if it is a bot or a human. \\
+Second, the framework allows to rate specific features, which are often used in current human evaluation (e.g. fluency, appropriateness, ...). The framework then measures the influence of these features on the survival time of the bots. There are two decisions to be made for the features: which features to rate (fluency, adequacy, quality, sensibleness, ... ) and how to rate them (Likert scale, continuous scale, pairwise comparison, ...).
 
-More formally, assume that there is a pool of $B$ bots $\{B_1, ..., B_B\}$, which is to be ranked, e.g.\ when a novel dialogue strategy is to be compared against existing strategies. For each pair of bots, a set of conversations is sampled by letting the bots talk to each other, where $S_{ij}$ denotes the set of conversations between $B_i$ and $B_j$. Each conversation is defined as a sequence of exchanges $e_0, ..., e_N$, where each exchange consists of two turns, one per entity $e_i = \{t_0^{e_i}, t_1^{e_i}\}$.
-
-%\emph{Spot The Bot} employs an annotation task that lets human crowdworkers read a conversation and decide for each entity in the conversation if it is a human or a bot. 
-%The bot-bot conversations are then shown to human crowdworkers who determine for each participant in a conversation whether it is a bot or a human.
-Showing only bot-bot conversations to the crowdworkers raises two issues: First, many conversational dialogue systems are not yet human-like enough to fool humans. Second, the crowdworkers might soon realize that all conversations are among bots, thus, classifying all entities as bots. 
-To alleviate the first issue, we add a time component under the assumption that disguising as humans in shorter conversations is achievable also for weaker bots. Hence, we segment the conversations into different stages: $e_0, ..., e_i$, as shown in Figure \ref{fig:example}. The bots are then differentiated not only by their ability to fool humans, but also by how long they are able to pass as a human (or at least are not spotted as a bot). For the second issue, we add conversations between humans into the pool. These serve two purposes: first, as distractors, so that the crowdworkers cannot classify all entities as bots, and second, as an upper bound for evaluating the human-like behaviour of the competing bots.
-Additionally, the framework allows to rate specific features, which are often used in current human evaluation (e.g. fluency, appropriateness, ...). The framework then measures the influence of these features on the survival time of the bots. 
-%Additionally, we ask the crowdworkers to state which bot performed better with regards to certain features: fluency, sensibleness, and specificity as defined in \cite{adiwardana2020towards}. 
-To rank the bots, we apply two different analysis on the annotation outcome: pair-wise ranking (rank the bots based on pair-wise comparisons from the annotated conversations), and survival analysis (i.e. probability of survival at each exchange and the influence of the different features).
-
-\subsection{Rating Process}\label{sec:setting}
-
-\paragraph{Bot-Bot Conversations.} For each pair of bots $B_i$, $B_j$ in the pool, we sample $|S_{ij}|$ conversations. In order to prime the conversations and obtain some variety of dialogues in $S_{ij}$.Given a set of contexts in the test set, the conversations are primed by showing the context to the bots. However, the initial context is not shown to the crowdworkers during annotation, since they are written by humans and are not part of the bot output. %The length of the sampled conversation is based on the conversation lengths in the given domain. This is to avoid that the bots are spotted by simply looking at the conversation length. 
-%\paragraph{Human-Bot Conversations.} Ideally, our approach works without relying on human-bot conversations, which are costly to obtain and often very noisy if not executed with care. We show that our approach works without the need of human-bot conversations, by comparing the results of the \emph{Spot The Bot} annotation procedure with and without human-bot conversations. For this, we collected human-bot conversations for each bot by letting members of our lab converse with them. We instructed them to adhere to the dialogue style of the respective domain and to avoid being adversarial. 
-\paragraph{Segmentation.} In order to simulate the time component, we show the conversations at different stages $e_0, ..., e_i$, where we chose different sets of values for $i$ depending on the domain\footnote{We experimented with letting crowdworkers decide themselves when to decide the exchange at which they were sure that an entity in the conversation is a bot or a human. However, this approach required too much fine-tuning to elicit the desired behaviour, cf.\ Appendix \ref{sec:appendix_gamification}.}. Each segment of the same conversation is annotated by different annotators to avoid that one annotator sees different segments of the same conversation. We assign two workers per conversation segment to be able to analyze their agreement.
-\paragraph{Annotation.} The generated bot-bot conversations and a set of randomly sampled human-human conversations are presented to crowdworkers. The crowdworkers are presented with a conversation segment and have to decide for each entity if it is a human or a bot. There is an option for "unsure" as well, since we want to avoid forcing random decisions when annotators are not confident.%are interested in cases where annotators are sure about their decision. 
-\paragraph{Features.} There are two decisions to be made for the features: which features to rate (fluency, adequacy, quality, sensibleness, ... ) and how to rate them (Likert scale, continuous scale, pairwise comparison, ...).
 
 \subsection{Ranking}
-
-%\emph{Spot the Bot} can be interpreted as a tournament amongst bots, whose objective it is to pass as a human. In pairwise, direct conversations, bots compete with each other to achieve this goal. The annotation result is thus based on an utmost direct comparison of each pair of bots. Whichever bot wins most of these direct matches, wins the tournament.
-%Intuitively, the bot that is able to fool a human earlier or hide its non-humanity longer, can be considered the better bot. 
-We first define a win function for the annotations of the pairwise, direct conversations between the bots. The outputs of the win function are then aggregated to determine the overall winner of the tournament.
-
-\paragraph{Win Function.}
-
-Each annotations at each segment length $s_{ij} = e_0, ... , e_{i_j}$ constitutes the result of one annotation applied by one crowdworker, individually labeling each of the two conversation participants as either \textit{bot, human}, or \textit{unsure}. The winner of segment $s_{ij}$ under a crowdworker's annotation is determined by the following ordering of the labels: $\textit{human} >  \textit{unsure} > \textit{bot}$. That is, if bot $B_i$ is assigned the label \textit{human} and bot $B_j$ has label \textit{bot} or \textit{unsure}, $B_i$ has won the segment.\footnote{This process is repeated for all crowdworkers who annotated the segment - in our case two per segment - and each win is counted separately.} Similar to \newcite{bojar-etal-2013-findings},  we define a win rate of $B_i$ against $B_j$ to aggregate the wins from all annotations of all segments stemming from conversations between $B_i$ and $B_j$, as: 
+We define a win function for the annotations of the pairwise, direct conversations between the bots. The outputs of the win function are aggregated to determine the overall winner of the tournament. \\
+\noindent{\bf Win Function.} Each annotations at each segment length $S_{ij}^k = e_0, ... , e_{k}$ constitutes the result of one annotation applied by one crowd worker, individually labeling each of the two conversation participants as either \textit{bot, human}, or \textit{unsure}. The winner of segment $S_{ij}^k$ under a crowd worker's annotation is determined by the following ordering of the labels: $\textit{human} >  \textit{unsure} > \textit{bot}$. That is, if bot $B_i$ is assigned the label \textit{human} and bot $B_j$ has label \textit{bot} or \textit{unsure}, $B_i$ has won the segment.\footnote{This process is repeated for all crowd workers who annotated the segment - in our case two per segment - and each win is counted separately.} Similar to \newcite{bojar-etal-2013-findings},  we define a win rate of $B_i$ against $B_j$ to aggregate the wins from all segments of all annotations stemming from conversations between bots $B_i$ and $B_j$, as: 
 
 \begin{equation}\label{eq:win_function}
-    \frac{\textsc{wins($B_i$, $B_j$)}}{\textsc{wins($B_i$, $B_j$)} + \textsc{wins($B_j$, $B_i$)}}
-\end{equation},
-where $\textsc{wins($B_i$, $B_j$)}$ denotes the number of times that $B_i$ wins against $B_j$.  %Since this formula ignores ties, it holds that $\textsc{win-rate($B_i$, $B_j$)} = 1 - \textsc{win-rate($B_j$, $B_i$)}$. 
-
-\paragraph{Ranking.}
-To create the ranking, we follow the approach by \newcite{dusek-etal-2018-findings} where the ranking is generated by the TrueSkill algorithm based on the win rate, and significant differences in performance are determined by bootstrap sampling. The result is a ranked set of clusters, where each cluster is composed of algorithms that do not have a significant difference in performance. 
+    %\textsc{win rate($B_i$, $B_j$)} =
+    \frac{\textsc{wins($B_i, B_j$)}}{\textsc{wins($B_i, B_j$)} + \textsc{wins($B_j, B_i$)}}
+\end{equation}
+where $\textsc{wins($B_i$, $B_j$)}$ denotes the number of times that $B_i$ wins against $B_j$. \\
+\noindent{\bf Ranking.} To create the ranking, we follow the approach by \newcite{dusek-etal-2018-findings} where the ranking is generated by the TrueSkill algorithm based on the win rate, and significant differences in performance are determined by bootstrap sampling. The result is a ranked set of clusters, where each cluster is composed of agents that do not have a significant difference in performance. 
 
 \subsection{Survival Analysis}
 
@@ -195,51 +138,17 @@ In our case, we are interested in the time, corresponding to the number of excha
 
 From this data we can get non-parametric estimates of the survival function of the different systems per domain \citep{nonparametric_survival_censored}.  To check whether these differences are significant, we apply a generalized log-rank test \citep{generalized_logranktest_zhao2004}.
 
-The field of survival analysis also offers different models for relating various covariates to the survival time. One of the most prominent among such models is the \emph{Cox Proportional Hazards Model} \citep{cox_ph_model}, which we use to study the influence of the different features outlined in Section \ref{sec:setting} on the time before the systems are spotted. This approach lets us compare bots in more detail and offers researchers insight into the reason of their bot's result in our evaluation.  We use the \emph{icenReg} R package \citep{icenReg}, which allows us to fit a Cox model to our interval-censored data.
+The field of survival analysis also offers different models for relating various covariates to the survival time. One of the most prominent among such models is the \emph{Cox Proportional Hazards Model} \citep{cox_ph_model}, which we use to study the influence of the different features outlined in Section \ref{sec:setting} on the time before the systems are spotted.\footnote{We use the \emph{icenReg} R package \citep{icenReg}, which allows us to fit a Cox model to our interval-censored data} This approach lets us compare bots in more detail and offers researchers insight into the reason of their bot's result in our evaluation.
+
+Note that ranking based on win rates and survival analysis are complementary metrics. While the win rates-based ranking of the bots is a relative metric that is dependant on the pool of the selected bots, survival analysis is a metric whose output can be interpreted for each bot individually, independent of the other, competing bots. That is, the ranking based on win rates determines which bot performs best in a pool of bots, while survival analysis indicates how well a bot performs in absolute terms.
 
 \section{Experiments}
-We apply \emph{Spot The Bot} to three widely used domains to train conversational dialogue systems: PersonaChat \cite{zhang-etal-2018-personalizing}, Dailydialog \cite{li-etal-2017-dailydialog}, and Empathetic Dialogues \cite{rashkin-etal-2019-towards}. For each domain, we prepared a pool of bots to be ranked and analysed. 
-%The \emph{Spot The Bot} framework returns two main analyses. First, a ranking of the conversational agents, which differentiates between bots that are significantly different and those where the performance is comparable. Second, the Survival Analysis, which states for each conversational agent the probability of survival after each segment. Furthermore, the Survival Analysis returns which of the features have a significant impact on the performance of the conversational agent. 
-
-
-\paragraph{Amazon Mechanical Turk.} We recruited paid crowdworkers from Amazon Mechanical Turk (AMT). In order to avoid that the results are biased towards the performance of a few crowdworkers, we designed a HIT as a batch of 20 conversations and each worker was only allowed to work on three batches. We designed the batches so that two segments of the same conversations never appear in the same batch, and each batch contains different segments of different conversations.  
-
-\paragraph{Features.} We chose three features: sensibleness and specificity \cite{adiwardana2020towards}, which are shown to capture the core conversational behaviour of answering sensibly and not with illogical statements, while being specific to the given context of the conversation. The third feature is fluency, which states if the utterances are grammatically correct and fluent. The features are rated by preference ranking, that is, the annotator states which of the two entities performed better with respect to the features. This allows to compute the win-rates on the feature basis which makes comparisons between entities more stable. 
-
-
-\subsection{Domains}
-
-\begin{table}[h!]
-\vspace{-1mm}
-\begin{center}
-\resizebox{.45\textwidth}{!}{
-\begin{tabular}{l||cccl} 
-\hline
-%\abovespace
-\textsc{Domain Name} & \textsc{\#Dialogues} &  \textsc{Avg. Exchanges} &  \textsc{$|B|$} & \textsc{Segments}\\
-\hline 
-\textsc{Dailydialog}  &     13118   & 3.74 &   4  & 2,3,5 \\
-\textsc{Epathetic Dialogues} &    25000   & 1.65 &   5   &  1,2,3   \\
-\textsc{Personachat}    & 10907   & 7.85  &   6   &  2,3,5  \\
-\hline
-\end{tabular}
-}
-\end{center}
-\caption{Overview of the domains}
-\label{table:domain-overview}
-\end{table}
-
-
-We apply Spot The Bot on three different domains, which all are based on conversations between two humans (see Table \ref{table:domain-overview} for an overview). Thus, the dialogue systems learn to imitate human conversational behaviour. 
-
-\paragraph{Personachat.} PersonaChat \cite{zhang-etal-2018-personalizing} contains dialogues between two humans, each of the conversation participants is given a predefined persona. The persona is a set of characteristics of a person (name, occupation, hobbies, etc.), and the goal of the conversation is to mimic the process of getting to know each other. 
-\paragraph{Dailydialog.} Dailydialog \cite{li-etal-2017-dailydialog} is a dataset that contains dialogues that occur in daily life situations. The data is crawled from English learning websites. Thus, the dialogues are better curated and more formal. Furthermore, the data is annotated with features that represent the emotion in the dialogue. For our experiment, we did not make use of these features. 
-\paragraph{Empathetic Dialogues.} Empathetic Dialogues \cite{rashkin-etal-2019-towards} focuses on empathetic response generation. The dialogues occur between two persons that discuss a situation that happened to one of the participants. Thus, there are two types of participants: the speaker and the listener. The first describes the situation and their feelings about it, and the listener responds empathetically. 
-
-\paragraph{Segmentation.} The segment lengths are based on the lengths of the dialogues in a domain. PersonaChat and Dailydialog have longer conversations. Thus, we used segments of 2,3, and 5 exchanges. The Empathetic Dialogue domain has rather short dialogues, thus, we used segment lengths of 1,2, and 3 exchanges. We noted that having too long conversations leads to more cognitive strain on the annotators. 
+We apply \emph{Spot The Bot} to three widely used domains for conversational dialogue systems: PersonaChat \cite{zhang-etal-2018-personalizing}, Dailydialog \cite{li-etal-2017-dailydialog}, and Empathetic Dialogues \cite{rashkin-etal-2019-towards}. For each domain, we prepared a pool of bots to be ranked and analysed. For each pair of bots, we sampled $|S_{ij}| = 45$ conversations. For the annotation task, we recruited paid crowdworkers from Amazon Mechanical Turk (AMT). In order to avoid that the results are biased towards the performance of a few crowdworkers, we designed a HIT as a batch of 20 conversations and each worker was only allowed to work on three batches. We designed the batches so that two segments of the same conversations never appear in the same batch, and each batch contains different segments of different conversations.  \\
+\noindent{\bf Features.} We chose three features: sensibleness and specificity \cite{adiwardana2020towards}, which are shown to capture the core conversational behaviour of answering sensibly and not with illogical statements, while being specific to the given context of the conversation. The third feature is fluency, which states if the utterances are grammatically correct and fluent. The features are rated by preference ranking, that is, the annotator states which of the two entities performed better with respect to the features. This allows to compute the win-rates on the feature basis which makes comparisons between entities more stable \cite{yannakakis2011ranking}. \\
+\noindent{\bf Segmentation.} The segment lengths are based on the lengths of the dialogues in a domain. PersonaChat and Dailydialog have longer conversations. Thus, we used segments of 2,3, and 5 exchanges. The Empathetic Dialogue domain has rather short dialogues, thus, we used segment lengths of 1,2, and 3 exchanges. We noted that having too long conversations leads to more cognitive strain on the annotators. 
 
 \subsection{Dialogue Systems}
-For the PersonaChat domain, we prepared a pool of $|B| = 6$ different dialogue systems: The Blender\footnote{Due to GPU restrictions, we used the small model with 90M parameters.} system (BL) \cite{roller2020recipes}, which is a state-of-the-art dialogue system trained on different domains, Lost in Conversation\footnote{\url{https://github.com/atselousov/transformer\_chatbot}} (LC) and Huggingface~\footnote{\url{https://github.com/huggingface/transfer-learning-conv-ai}}(HF), which were the top rated dialogue systems in the ConvAI2 challenge \cite{dinan2020convai2}, KVMemNN (KM), which is the baseline used for the ConvAI2 challenge, and three systems trained with ParlAI \cite{miller2017parlai}: BertRank (BR), and a small Seq2Seq model (DR). The small Seq2Seq model is trained only for 3 epochs, and returns only very general and short answers, which serves to assess how Spot The Bot works for very weak models.  \\
+For the PersonaChat domain, we prepared a pool of $|B| = 6$ different dialogue systems: The Blender\footnote{Due to GPU restrictions, we used the small model with 90M parameters.} system (BL) \cite{roller2020recipes}, which is a state-of-the-art dialogue system trained on different domains, Lost in Conversation\footnote{\url{https://github.com/atselousov/transformer\_chatbot}} (LC) and Huggingface~\footnote{\url{https://github.com/huggingface/transfer-learning-conv-ai}}(HF), which were the top rated dialogue systems in the ConvAI2 challenge \cite{dinan2020convai2}, KVMemNN (KM), which is the baseline used for the ConvAI2 challenge, and two systems trained with ParlAI \cite{miller2017parlai}: BertRank (BR), and a small Seq2Seq model (DR). The small Seq2Seq model is trained only for 3 epochs, and returns only very general and short answers, which serves to assess how Spot The Bot works for very weak models.  \\
 For the Empathetic Dialogues domain, we used a set of $|B| = 5$ dialogue systems using the ParlAI framework: The Blender model (BL), a fine-tuned GPT2 (GPT), BertRank (BR), Seq2Seq+Att (S2), and a small Seq2Seq model (DR).  \\
 For the Dailydialog domain, we used the same set of systems as the Empathetic Dialogues, except for the Blender model.
 
@@ -274,7 +183,6 @@ The BL model outperforms all other models in both the PersonaChat and Empathetic
 \end{figure*}
 
 Figure \ref{fig:survival_all_domains} shows the survival functions for the three domains. We see that there are differences in the survival of the different systems that correspond to the fooling rates observed in Figure \ref{fig:fooling_rate}. The survival rates imply the same rankings as those from pairwise win-rates reported in Table \ref{tab:win_rates}. The only exception being the Empathetic Dialogues domain, where GPT and BR switch places. Importantly, the distinction between these two is not significant in both rankings. Further non-significant differences are S2 and DR in the Empathetic Dialogues domain, BR and S2 in the Dailydialog domain, and LC and KV in the PersonaChat domain. All other pairwise comparisons of survival curves are significant with $p  < 0.05$ after correction for multiple comparisons.
-
 \begin{table}[ht]
     \centering
     \small
@@ -283,8 +191,8 @@ Figure \ref{fig:survival_all_domains} shows the survival functions for the three
     influence on system survival according to a Cox model.}
     \label{tab:survival_features}
 \end{table}
-
-\paragraph{Feature Influence} For each of the three features -- fluency, specificity, and sensibleness -- annotators have to specify whether one entity performed better, the same, or worse than the other. We encode this information as $1$, $0$, and $-1$ respectively and fit a Cox proportional hazards model for every system independently with the features as covariates.
+\\
+\noindent{\bf Feature Influence} For each of the three features -- fluency, specificity, and sensibleness -- annotators have to specify whether one entity performed better, the same, or worse than the other. We encode this information as $1$, $0$, and $-1$ respectively and fit a Cox proportional hazards model for every system independently with the features as covariates.
 
 The numerical entries in Table \ref{tab:survival_features} refer to the per-feature win-rate of each bot, which is computed analogously to Equation \ref{eq:win_function} using the feature annotations directly. Using these can be more intuitive than relying on the magnitude of the model coefficients, which can be hard to interpret.
 Bold entries in Table \ref{tab:survival_features} show which features have a significant influence on the system being spotted. All significant effects go in the intuitive direction, meaning that a higher feature value leads to longer survival.  For example, for the DR model, the fluency feature is significant across all three domains, and together with its low fluency win-rate, we can deduce that it is often spotted due to its low fluency. Sensibleness seems to be an important feature across the board, meaning that in general, bots can be spotted due to inappropriate, nonsensical answers or hide if they respond in a suitable manner. Interestingly, specificity seems to be mostly unimportant which could be due to either the bots not being noticeably unspecific, or it being an irrelevant feature for the chosen domains.
@@ -309,13 +217,13 @@ One key requirement to an evaluation procedure is that repeated executions of th
   \caption{Ranking stability experiments.The x-axis denotes the number of pairwise conversations between two bots. The y-axis denotes the rate at which the same ranking is achieved across 1000 repetitions. The horizontal line denotes the 95\% mark. In the lower Figure, we show the experiments for the PersonaChat domain, when leaving one system out.}
 \end{figure}
 %----------------------------------------------------------------------------
-Figure \ref{fig:ranking-significance} shows for each $|S_{ij}| \in \{3 ... 44\}$ the percentage of times in which the most frequent ranking occurred. For the Dailydialog domain $|S_{ij}| = 33$ pariwise conversations are enough to guarantee a stable ranking. In the other two domains this value is reached with over 40 pairwise dialogues. This is due to the fact that in these two domains there are dialogue systems, which are not distinguishable in their performance. In order to investigate this phenomena, we repeat the above experiment on the PersonaChat domain by leaving one system out. Figure \ref{fig:ranking-significance-loo} shows the result of the ranking stability for each left-out system. When leaving one between LC or KV out, the stability is achieved with 25 pairwise dialogues, which is due to the fact that their pairwise comparison is not significant. However, a subsample of their pairwise comparisons might yield significant differences, which leads to different clusters in the ranking. In fact, the two rankings differ in that the first puts KV and LC in the same cluster, and in the second, LC and KV are in separate clusters, with LC being on top.
+Figure \ref{fig:ranking-significance} shows for each $|S_{ij}| \in \{3 ... 44\}$ the proportion of times in which the most frequent ranking occurred. For the Dailydialog domain $|S_{ij}| = 33$ pairwise conversations are enough to guarantee a stable ranking. In the other two domains this value is reached with over 40 pairwise dialogues. This is due to the fact that in these two domains there are dialogue systems, which are not distinguishable in their performance. In order to investigate this phenomenon, we repeat the above experiment on the PersonaChat domain by leaving one system out. Figure \ref{fig:ranking-significance-loo} shows the result of the ranking stability for each left-out system. When leaving one between LC or KV out, the stability is achieved with 25 pairwise dialogues, which is due to the fact that their pairwise comparison is not significant. However, a subsample of their pairwise comparisons might yield significant differences, which leads to different clusters in the ranking. In fact, the two rankings differ in that the first puts KV and LC in the same cluster, and in the second, LC and KV are in separate clusters, with LC being on top.
 
-
+Methods based on human-bot interactions required more conversations as for example in ConvAI2, where they evaluated 100 dialogues per system.  ACUTE-EVAL, which is more similar to our method, obtained a high agreement evaluating pairs with 20 conversations per system, but they did not report agreement for the ranking of a pool of systems.
 
 \subsection{Annotator (Dis)agreement as a Feature}
-The robustness of evaluation of conversational dialogue systems is often hampered by inter-annotator agreement (IAA) (cite). % IAA is generally measured using some agreement metric, and the soundness of the evaluation data is determined by segmenting the range of such metrics into (non-)acceptable subranges. 
-On the one hand, measuring and reporting IAA is, unfortunately, not a standard practise in the evaluation of chat bots (cite). On the other hand, it has been shown that producing annotations with high IAA on open domain conversations is a challenging endeavour, as annotating features on e.g.\ likert scales is prone to be impeded by subjective interpretation and idiosyncratic annotator behaviour (cite).
+The robustness of evaluation of conversational dialogue systems is often hampered by inter-annotator agreement (IAA) \cite{gandhe2016semi}. % IAA is generally measured using some agreement metric, and the soundness of the evaluation data is determined by segmenting the range of such metrics into (non-)acceptable subranges. 
+On the one hand, measuring and reporting IAA is, unfortunately, not a standard practise in the evaluation of chat bots \cite{amidei2019agreement}. On the other hand, it has been shown that producing annotations with high IAA on open domain conversations is a challenging endeavour, as annotating features on e.g.\ likert scales is prone to be impeded by subjective interpretation and idiosyncratic annotator behaviour \cite{bishop2015use}.
 %The main goal for a bot in our setting is to disguise as a human, and the bot which manages to do so the longest, wins. 
 
 In our setting, annotator disagreement on a bot's human-like behaviour can be interpreted as a feature: A bot that manages to fool one of two annotators (maximal disagreement) into believing it is human can be said to have performed better than a bot that does not manage to fool any annotator (maximal agreement). Conversely, a bot that is spotted with high agreement has performed worse than a bot that is spotted with lower agreement.
@@ -340,14 +248,14 @@ In our setting, annotator disagreement on a bot's human-like behaviour can be in
 %\end{table}
 
 %This analysis tells us how well annotators agree in general, but does not indicate whether they agree on the level of human-like behaviour of each bot. 
-To investigate this, we calculate per bot and label the percentage of cases where both annotators annotate the label if one of them does. Given three labels (\emph{human, bot, unsure}), the chance for random agreement is 0.33. Results are shown in Table \ref{tab:agreement_per_label}.
+To investigate this, we calculate per bot and label the percentage of cases where both annotators annotate the label if one of them does. Given three labels (\emph{human, bot, unsure}), the chance for random agreement is 0.33. A bot's goal in this analysis is to reach high agreement on the \emph{human} label (since it has then tricked both annotators into believing it is human) and low agreement on the \emph{bot} label (it is better to be spotted as a bot by only one annotator). Results are shown in Table \ref{tab:agreement_per_label}.
 
 \input{tables/annotator_agreement}
 
-A bot's goal in this analysis is to reach high agreement on the \emph{human} label (since it has then tricked both annotators into believing it is human) and low agreement on the \emph{bot} label (it is better to be spotted as a bot by only one annotator). 
-We observe that the bots that rank high in the tournament outcome and the survival analysis (BL, HF, LC) obtain the highest agreement on the \emph{human} label and lowest agreement on the \emph{bot} label in all domains. For the BL system in the Empathetic Dialogues domain, the agreement values are highly distinct from the competitors and close to the agreement that the human entities obtain. That is, in 72\% of the cases where one annotator labels the bot as being human, the other annotator agrees. Conversely, the annotators agree that BL is a bot in only 33\% of the cases where one annotator identifies it as a bot. That is, the agreement for the \emph{human} label is more than twice as high as agreement by chance, and agreement on the \emph{bot} label is as low as random agreement. On the other end, we see that the DR system consistently obtains highest agreement when being identified as a bot, and lowest when it is perceived as a human. 
+We observe that the bots that rank high in the tournament outcome and the survival analysis (BL, HF, LC) obtain the highest agreement on the \emph{human} label and lowest agreement on the \emph{bot} label in all domains. For the BL system in the Empathetic Dialogues domain, the agreement values are highly distinct from the other competitors and close to the agreement that the human entities obtain. That is, in 72\% of the cases where one annotator labels the bot as being human, the other annotator agrees. Conversely, the annotators agree that BL is a bot in only 33\% of the cases where one annotator identifies it as a bot. That is, the agreement for the \emph{human} label is more than twice as high as agreement by chance, and agreement on the \emph{bot} label is as low as random agreement. On the other end, we see that the DR system consistently obtains highest agreement when being identified as a bot, and lowest when it is perceived as a human. 
 %The Dailydialog domain seems to be the hardest in terms of convincing both annotators of human-like behaviour, i.e.\ the agreement on the \emph{human} label for the best performing bot (HF) is only slightly higher than random agreement. 
-Our analysis of the agreement on the assigned labels suggests that the ranking in our Spot The Bot experiments do not result from random agreement between the annotators, i.e.\ the annotations of the best and worst performing systems show agreements distinctly higher than chance regarding the respective labels. 
+Our analysis of the agreement on the assigned labels suggests that the ranking in our Spot The Bot experiments do not result from random agreement between the annotators, i.e.\ the annotations of the best and worst performing systems show agreements distinctly higher than chance regarding the respective labels. This is different from previous evaluations, specially those based on Likert scores, where it is difficult to obtain a high IAA \cite{bishop2015use}. Moreover, we take advantage of disagreement as an informative measure. ACUTE-EVAL, which is more similar to our method, reported agreement rates between 70\% and 87\% with only two labels (bot A or bot B) using PersonaChat.
+
 %We see that {HF} reaches the best agreement on the \emph{human} label and the lowest on the \emph{bot} label. That is, if one annotators annotates it as being human, the other annotator does so as well in 38\% of the cases, and in 64\% percent of the cases where one annotator spots {HF} as a bot, the other annotator agrees. Conversely, system {D} again has the highest agreement regarding the \emph{bot} label and the lowest on the \emph{human} label. Overall, there is little agreement on the unsure label, indicating that a decision can be taken for most segments.
 
 %\begin{table*}[ht!]
@@ -369,61 +277,33 @@ Our analysis of the agreement on the assigned labels suggests that the ranking i
 
 %We extend this analysis to the level of conflicting label pairs.\footnote{Since we always have two annotators per segment, we obtain pairs of labels.} A label pair is the combination of the labels assigned to an entity in a segment. We calculate the distribution over label pairs found in the annotation per entity, shown in Table \ref{tab:label_pair_percentage}. We are here particularly interested in conflicting labels (\emph{bot-human, bot-unsure, human-unsure}). Since \emph{human-unsure} is quite rare, we focus on the other two. The most erratic label pair in terms of disagreement is the \emph{bot-human} label, indicating a vastly different impression of the bots' behaviour in the eyes of the annotators. We see that it is almost twice as frequent as the \emph{bot-unsure} label. Overall however, this problematic label confusion occurs in at most 30\% of the cases (HF), leaving the other 70\% with less severe disagreement.
 
-\subsection{On Stability against weak Annotators}
-One drawback of Likert-scale based evaluation methods is that many annotations need to be removed due to unreliable annotators \cite{lowe-etal-2017-towards}. \emph{Spot The Bot} shows that it is stable with respect to weak annotators. Since we can measure how often the annotators correctly classify an entity, we can rate the quality of an annotator. A random annotator would receive a correctness rate of 50\%. Table \ref{table:annotator-overview} shows an overview of the annotators for each domain. 
 
-\input{tables/annotator_overview}
 
- The average correctness score is significantly higher than random. For the Dailydialog and Empathetic Dialog domain, the rate of annotators, which achieved a rate below 50\% was below 10\% of all annotators. For the PersonaChat domain the rate is higher, which is due to the fact that stronger dialogue systems were in the pool of bots. The average correctness scores for predicting humans correctly, is high for all domains. 
-\emph{Spot The Bot} proves to be stable against annotators with low scores. When removing all annotators with scores below $75\%$ the rankings remain stable. Only the significance scores decrease as a large amount of dialogues gets removed. 
-
-\subsection{On Cost and Time efficiency}
+\subsection{On Time efficiency}
 Evaluation methods, which are costly and take up a long time slow down the development cycle of dialogue systems. \emph{Spot The Bot} brings down the cost and time effort compared to other methods. 
 \input{tables/annoation-cost}
-In Table \ref{table:annotator-cost} the median time per annotation is displayed.  For the Dailydialog and PersonaChat domain, the average annotation time is at around 25 seconds. For the Empathetic Dialogues it's at 18 seconds, which is due to the smaller segments. We compare this to the time to create conversations between humans and bots. We recruited three dialogue system experts from our lab to interact with the systems. Each expert interacted for 5 times with each system. The average times do not take into account the time needed to instruct the experts. For the Dailydialog and Empathetic Dialogies domains, it takes over 2 Minutes per conversation. For PersonaChat, the time increased to almost 4 minutes. Thus, \emph{Spot The Bot} drastically increases the annotation speed, while reducing the mental strain for the human raters.
+In Table \ref{table:annotator-cost} the mean time per annotation is displayed.  For the Dailydialog and PersonaChat domain, the average annotation time is at around 25 seconds. For the Empathetic Dialogues it's at 18 seconds, which is due to the shorter segments. We compare this to the time to create conversations between humans and bots. We recruited three dialogue system experts from our lab to interact with the systems. Each expert interacted for 5 times with each system. The average times do not take into account the time needed to instruct the experts. For the Dailydialog and Empathetic Dialogies domains, it takes over 2 Minutes per conversation. For PersonaChat, the time increased to almost 4 minutes. Similarly to our experts, the average time for a human-bot conversation in the wild evaluation of the ConvAI2 challenge\footnote{http://convai.io/data/} lies also at 4 minutes\footnote{We consider only conversations that have at least 10 turns, which is comparable to the setting of our experts.}.
+
+With respect to other methods based on self-chatting, ACUTE-EVAL did not report the time per annotation, but they reported the time required to achieve significant results in PersonaChat, which is close to 30 minutes. Our method requires only 10 minutes (40 annotations). Thus, \emph{Spot The Bot} drastically increases the annotation speed, while reducing the mental strain for the human raters.
 
 
-
-\subsection{Segment Length Analysis}
-\input{tables/win_rates/segments}
-The intuition behind the segment length is that if the dialogue is too long then most conversational dialogue systems will always be exposed as such. Contrary, if the dialogues are too short then there is too little information to discriminate between dialogue systems. Thus, having different lengths of conversations ensures that these extremes do not occur. The effect is shown in Table \ref{tab:segment-analysis}. For each dialogue system the rate at which it is classified as human is depicted for the three different segments. For each of the dialogue systems this rate goes down, which is in line with our intuition. Similarly, the rate of unsure classification is lower at later segments. In later segments two phenomena occur. First, the number of ties increases, as most dialogue systems get exposed as such, the number of ties in the Dailydialog domain increases from 72\% to 81\%. Second, the difference between the win-rates increases. That is, better bots have a higher win-rate and the lower ranked bots get a lower win rate. However, the win-rates are less significant due to the high number of ties. For instance, the GPT model increases its win rate to 0.81, whereas the win rate for S2 decreases from 0.46 to 0.34.
-
-
-\section{Conclusion and Future Work}
-Points relevant for discussion of related work:
-
-\begin{itemize}
-    \item We present an evaluation framework for dialogue system that produces reliable, repeatable results in an efficient manner. The framework introduces bot-bot conversations as a means to bypass creating human-bot conversations which are costly to obtain and often of sub-par quality (cf.\ convai2 paper; they threw away a large portion of their data because they were of low quality). It is generally hard to do human-bot convos, as the humans need to be instructed on how to behave. Furthermore, the bot-bot talks allow to evaluate the bots behaviour over time, which is different than the evaluations, which work on a fixed context and a single bot-response.
-    \item The framework requires fewer annotated conversations than related approaches to generate robust results and is thus quicker and more cost-effective to run. From empirical evidence, it seems that around 40 pairwise conversations are enough.
-    \item We show that disagreement between human annotators is seen as an indicator of the strength of a bot's performance, as opposed to low agreement constituting an issue in related approaches.
-    Intuition: a bot where everyone agrees that it is a bot, is worse than a bot where most rate it as a bot but with less agreement.
-    \item We apply the framework to three well-known domains as well as common baselines to produce a stable ranking among them.
-\end{itemize}
-
-*TODO combine the conducted multifaceted-evaluation of the bots into an overall assessment of their performance in Spot the Bot. We need to show how all of these analyses are integrated in a digest-able overview.
-
-
-
-\begin{itemize}
-    \item AutoJudge, try to automate this process
-    \item Analyse the granularity, how much difference can this procedure pick up?
-    \item Apply to Lifelong learning or application to bot-development process to measure progress. How can this be done.
-\end{itemize}
+\section{Conclusion}
+In this work, we introduce \emph{Spot The Bot}, a robust, and time efficient approach for evaluating conversational dialogue systems. It is based on conversations between bots which are rated by humans with respect to the bots' ability to mimic human behaviour. We show that \emph{Spot The Bot} yields robust and significant results while reducing the time of evaluation drastically. We make the framework as well as the data publicly available. 
 
 
 \section*{TODO: integrate}
 \begin{itemize}
-    \item bullet point introduction
-    \item discuss (our) efforts in creating human-bot convos: how long did it take us?
-    \item Motivate better the use of win rates vs survival analysis $\rightarrow$ point to interpretability of features in survival analysis, early on in the paper (strong point of the paper)
-    \item motivate: why is bot-bot better than self-talk? we haven't given a reason, yet. $\rightarrow$ intuitive: you can directly compare bots. ACUTEval shwos self-talk logs of two bots next to eachother, however it is hard to compare them. Thus, having two bots in the same conversation is a better ground for comparison.
-    \item Problem that annotators realize that entities in convos are either both humans or both bots, i.e. there are not human-bot conversations $\rightarrow$ measure ratio "sameness" of annotations (both entities are annotated as humans or both as bots; overall and during annotation job)
-    \item Human-bot convos: show that excluding human-bot convos does not change ranking, but reduces point differences between the bots $\rightarrow$ Show barplot of point w/o human-bot convos?
-    \item analyze/show time per annotation job per annotator? is it an important factor? $\rightarrow$ spammers? at least discuss how we blacklist spammers
-    \item raw fooling rates vs avg of avg fooling rates per bot? (against annotator bias)
-    \item comparison to Convai2 evaluation approach and ranking. Comparison to ACUTE-Eval.
-    \item appedix: show some human-human convos that are anntoated as bots
-
+    \item Related Work match to Problems (Jan)
+    \item Argue in related work section that HB convos are low quality and hard to produce. (Jan)
+    \item Unify Ranking  + Survival (Don) 
+    \item Optimize Figure 1 and 2 (Synapse). Is Figure 1 necessary? 
+    \item Abstract (Don)
+    \item Title? (Mail to all)
+    \item Trim/Cut stuff (all).
+    \item Intro (Eneko) First version (Don)
+    \item Figure 3, optimize (Pius)
+    \item Survival Analysie (Pius)
+    \item Conclusion
 \end{itemize}
 
 \section*{Acknowledgments}
@@ -455,7 +335,7 @@ Figure \ref{fig:tool} shows the annotation tool. The annotator is presented with
 
 \section{Gamification}
 \label{sec:appendix_gamification}
-As an alternative to the segmentation approach, we experimented with a gamified version of the annotion tool (see Figure \ref{fig:game-tool}). In this version the annotators were presented with the first turn of the conversation. At each point in time they could choose whether to open the next turn or decide for an entity. If both decisions have been made the annotators had to decide for the three aforementioned features, which entity performs better. 
+As an alternative to the segmentation approach, we experimented with a gamified version of the annotation tool (see Figure \ref{fig:game-tool}). In this version the annotators were presented with the first turn of the conversation. At each point in time they could choose whether to open the next turn or decide for an entity. If both decisions have been made the annotators had to decide for the three aforementioned features, which entity performs better. 
 The task was framed as a game and the annotators received feedback in the form of a leaderboard. The score was a combination of the correctness (were the entities classified correctly) and a turn-penalty, that is, the more turns they opened the lower the score. As an additional incentive, the winner was awarded a bonus payment. 
 However, this approach resulted in unwanted behaviour of the annotators. There were some that always decided after just one exchange, which lead to random annotations. Others opened the whole conversation first, and then decided. To counteract these behaviours the tool needed a lot of fine-tuning, which made the approach not reliable for practical use.
 
@@ -488,6 +368,33 @@ In Table \ref{tab:fl-win-rates} the win rates and rankings for the fluency featu
 In Table \ref{tab:ssa-win-rates} the win rates for the Sensibleness and
 Specificity Average (SSA) are shown. A system wins if it is favoured both in sensibleness and specificity. The rankings are similar to the bot detection rankings. For empathetic dialogues, the GPT model performs indistinguishably from the S2 model. In the PersonaChat domain HF and BR are in the same cluster. 
 
+\section{Domain Details}
+\label{app:domain}
+
+\begin{table}[h!]
+\vspace{-1mm}
+\begin{center}
+\resizebox{.45\textwidth}{!}{
+\begin{tabular}{l||cccl} 
+\hline
+%\abovespace
+\textsc{Domain Name} & \textsc{\#Dialogues} &  \textsc{Avg. Exchanges} &  \textsc{$|B|$} & \textsc{Segments}\\
+\hline 
+\textsc{Dailydialog}  &     13118   & 3.74 &   4  & 2,3,5 \\
+\textsc{Empathetic Dialogues} &    25000   & 1.65 &   5   &  1,2,3   \\
+\textsc{Personachat}    & 10907   & 7.85  &   6   &  2,3,5  \\
+\hline
+\end{tabular}
+}
+\end{center}
+\caption{Overview of the domains}
+\label{table:domain-overview}
+\end{table}
+
+We apply Spot The Bot on three different domains, which all are based on conversations between two humans. Thus, the dialogue systems learn to imitate human conversational behaviour. \\
+\noindent{\bf Personachat.} PersonaChat \cite{zhang-etal-2018-personalizing} contains dialogues between two humans, each of the conversation participants is given a predefined persona. The persona is a set of characteristics of a person (name, occupation, hobbies, etc.), and the goal of the conversation is to mimic the process of getting to know each other. \\
+\noindent{\bf Dailydialog.} Dailydialog \cite{li-etal-2017-dailydialog} is a dataset that contains dialogues that occur in daily life situations. The data is crawled from English learning websites. Thus, the dialogues are better curated and more formal. Furthermore, the data is annotated with features that represent the emotion in the dialogue. For our experiment, we did not make use of these features. \\
+\noindent{\bf Empathetic Dialogues.} Empathetic Dialogues \cite{rashkin-etal-2019-towards} focuses on empathetic response generation. The dialogues occur between two persons that discuss a situation that happened to one of the participants. Thus, there are two types of participants: the speaker and the listener. The first describes the situation and their feelings about it, and the listener responds empathetically. 
 
 
 \section{Fooling Rates}
@@ -513,5 +420,20 @@ Specificity Average (SSA) are shown. A system wins if it is favoured both in sen
   \label{fig:fooling_rate}
 \end{figure*}
 %----------------------------------------------------------------------------
+
+
+\section{Segment Length Analysis}
+\input{tables/win_rates/segments}
+The intuition behind the segment length is that if the dialogue is too long then most conversational dialogue systems will always be exposed as such. Contrary, if the dialogues are too short then there is too little information to discriminate between dialogue systems. Thus, having different lengths of conversations ensures that these extremes do not occur. The effect is shown in Table \ref{tab:segment-analysis}. For each dialogue system the rate at which it is classified as human is depicted for the three different segments. For each of the dialogue systems this rate goes down, which is in line with our intuition. Similarly, the rate of unsure classification is lower at later segments. In later segments two phenomena occur. First, the number of ties increases, as most dialogue systems get exposed as such, the number of ties in the Dailydialog domain increases from 72\% to 81\%. Second, the difference between the win-rates increases. That is, better bots have a higher win-rate and the lower ranked bots get a lower win rate. However, the win-rates are less significant due to the high number of ties. For instance, the GPT model increases its win rate to 0.81, whereas the win rate for S2 decreases from 0.46 to 0.34.
+
+\section{On Stability against weak Annotators}
+One drawback of Likert-scale based evaluation methods is that many annotations need to be removed due to unreliable annotators \cite{lowe-etal-2017-towards}. \emph{Spot The Bot} shows that it is stable with respect to weak annotators. Since we can measure how often the annotators correctly classify an entity, we can rate the quality of an annotator. A random annotator would receive a correctness rate of 50\%. Table \ref{table:annotator-overview} shows an overview of the annotators for each domain. 
+
+\input{tables/annotator_overview}
+
+ The average correctness score is significantly higher than random. For the Dailydialog and Empathetic Dialog domain, the rate of annotators, which achieved a rate below 50\% was below 10\% of all annotators. For the PersonaChat domain the rate is higher, which is due to the fact that stronger dialogue systems were in the pool of bots. The average correctness scores for predicting humans correctly, is high for all domains. 
+Hence, \emph{Spot The Bot} proves to be stable against annotators with low scores. 
+
+When removing all annotators with scores below $75\%$ the rankings remain stable. Only the significance scores decrease as a large amount of dialogues gets removed. This lies in contrast to the gathering of conversations between humans and bots, which must be strictly supervised. For instance, the dialogues gathered in the wild evaluation of the ConvAI2 challenge were not usable. In fact, we applied Spot The Bot on these conversations, and the humans were rated as bots in 45\% of the cases.
 
 \end{document}
